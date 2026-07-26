@@ -20,8 +20,12 @@ For each postal code, the script sends the latitude/longitude to the OpenWeather
 gets back the current temperature, "feels like" temperature, humidity, pressure, and a
 short weather description.
 
-**3. Transform (clean the data)**
-Raw API data isn't ready to store as-is, so the script:
+**3. Transform (flatten the nested JSON, then clean it)**
+The API doesn't hand back a neat table — it returns **nested JSON**, where the values we need
+sit inside other values: temperature lives inside a `main` object, and the weather description
+lives inside a `weather` *list*. The script pulls those fields out of the nested structure and
+flattens them into **one flat row per postal code**, which is the shape a database table needs.
+It then cleans that row up:
 - Converts the weather API's timestamp (a number like `1721923200`) into a normal, readable date/time.
 - Rounds temperature and other numbers to 2 decimal places.
 - Skips any postal code where the API didn't return usable data (instead of crashing).
